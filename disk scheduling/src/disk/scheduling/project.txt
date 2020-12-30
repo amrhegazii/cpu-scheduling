@@ -1,0 +1,213 @@
+main:
+
+
+package disk.scheduling;
+
+import static disk.scheduling.FCFS.fcfs;
+import static disk.scheduling.SCAN.scan;
+import java.util.Scanner;
+
+/**
+ *
+ * @author mahmo
+ */
+public class DiskScheduling {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+     Scanner in = new Scanner(System.in);
+System.out.println("Please enter the number of the algorithm to be calculated: "+"\n");
+ System.out.println("1- FCFS"+"\n"
+         + "2- SCAN" );
+String msg = in.nextLine();
+int algorithm = Integer.valueOf(msg);
+
+
+            String algostring;
+            switch (algorithm) {
+                case 1:  algostring = "FCFS";
+                         System.out.println("you've chosen first come first served"+"\n");
+                        
+                         fcfs();
+                         break;
+                         
+                           case 2:  algostring = "short job first non-preemptive";
+                System.out.println("you've chosen SCAN"+"\n");
+                
+                         scan();
+                        break;
+                
+                  default: algostring = "Invalid input";
+                         break;
+            }
+    }
+}
+
+
+fcfs:
+
+
+package disk.scheduling;
+
+import java.util.Scanner;
+
+/**
+ *
+ * @author mahmo
+ */
+
+public class FCFS {
+    
+     public static void fcfs()
+	{
+		int StartHead,n;
+                //two varible intial head el betbda2 mno w n 3adad el location el betrohaa
+                
+		System.out.println("Enter start header location: ");
+		Scanner sc = new Scanner(System.in);
+		StartHead = sc.nextInt();  
+                // hanbda2 mn anhy rakam  
+                
+                
+		System.out.println("Enter number of disk locations: ");
+		n = sc.nextInt();
+                // yakhod number of disc locations
+                
+		int[] disk_location = new int[n];
+                // 3arraf array lel disk location 3shan n save feh
+                
+		int dl=0,seek_time=0,i;
+                
+		System.out.println("Enter the disk locations: ");
+		for(i=0;i<n;i++) disk_location[i] = sc.nextInt();
+                // to3od tdakhal arkam 
+                
+		System.out.println("Order \t Seek Time");
+		dl = StartHead;
+                //haybadel el dl b el initial head   
+              
+		for(i=0;i<n;i++)
+		{
+			System.out.print(disk_location[i]+" \t ");
+			dl = Math.abs(dl - disk_location[i]);
+			System.out.println(dl);
+			seek_time+=dl;
+			dl = disk_location[i];
+		}
+		System.out.println();
+		System.out.println("Total Seek Time is:"+seek_time);
+	}
+}
+
+
+scan:
+
+package disk.scheduling;
+
+import java.util.Scanner;
+
+/**
+ *
+ * @author mahmo
+ */
+
+class SCAN
+{
+	public static void scan()
+	{
+		int StartHead,n,PrevHead,DiskSize=99;
+		
+		System.out.println("Enter start header location: ");
+		Scanner sc = new Scanner(System.in);
+		StartHead = sc.nextInt();
+		
+		System.out.println("Enter previous header location: ");
+		PrevHead = sc.nextInt();
+		
+		
+		System.out.println("Enter number of disk locations: ");
+		n = sc.nextInt();
+		
+		int[] disk_location = new int[n];
+		int seek_time=0,i,j,direction=0;
+		
+		System.out.println("Enter the disk locations: ");
+		
+                for(i=0;i<n;i++) disk_location[i] = sc.nextInt();
+		
+		
+                
+		int[] visited = new int[n+1];
+		
+		System.out.println("Disk Location \t Seek Time");
+		
+		if(PrevHead<=StartHead) direction=0;
+		else direction=1;
+		
+                
+		for(i=0;i<n;i++)
+		{
+			int pos = -1;
+			int min = DiskSize;
+			for(j=0;j<n;j++)
+			{
+				
+				if(direction==0)
+				{
+					
+					if(disk_location[j]>StartHead && min>Math.abs(disk_location[j]-StartHead) && visited[j]==0)
+					{
+					
+						min = Math.abs(disk_location[j] - StartHead);
+						pos = j;
+					}
+				}
+				
+				else if(direction==1)
+				{
+					if(disk_location[j]<=StartHead && min>Math.abs(disk_location[j]-StartHead) && visited[j]==0)
+					{
+					
+						pos = j;
+						min = Math.abs(disk_location[j]-StartHead);
+					}
+				}
+			}
+			
+			if(pos==-1)
+			{
+				if(direction==0)
+				{
+					direction=1;
+					seek_time += Math.abs(DiskSize - StartHead);
+					System.out.println(DiskSize+"\t\t "+seek_time);
+					StartHead = DiskSize;
+				}
+				else 
+				{
+					direction=0;
+					seek_time += Math.abs(0 - StartHead);
+					System.out.println(0+"\t\t "+seek_time);
+					StartHead = 0;
+				}
+				System.out.println("-------------------------------------------------");
+				System.out.println("Changing Directions");
+				System.out.println("-------------------------------------------------");
+				System.out.println("Disk Location \t Seek Time");
+				i--;
+				continue;
+			}
+			visited[pos] = 1;
+			seek_time += Math.abs(disk_location[pos] - StartHead);
+			System.out.println(disk_location[pos]+"\t\t "+seek_time);
+			StartHead = disk_location[pos];
+		}
+		
+		System.out.println();
+		System.out.println("Total Seek Time is:"+seek_time);
+        }
+          
+	
+    }
